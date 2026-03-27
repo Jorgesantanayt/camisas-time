@@ -1,29 +1,42 @@
 "use client";
 import { useState } from "react";
 
-const camisas = [
+type Camisa = {
+  id: number;
+  nome: string;
+  preco: string;
+  parcelas: string;
+  cor: string;
+  bg: string;
+  img?: string;
+};
+
+const camisas: Camisa[] = [
   { id: 1, nome: "Brasil 2026 – Home", preco: "R$ 349,90", parcelas: "3x R$ 116,63", cor: "#009C3B", bg: "#e8f5e9", img: "/camisas/brasil-home.jpg" },
-  { id: 2, nome: "Brasil 2024 – Away", preco: "R$ 349,90", parcelas: "3x R$ 116,63", emoji: "🔵", cor: "#002776", bg: "#e8eaf6" },
-  { id: 3, nome: "Argentina 2024",    preco: "R$ 329,90", parcelas: "3x R$ 109,96", emoji: "🩵", cor: "#74ACDF", bg: "#e3f2fd" },
-  { id: 4, nome: "França 2024",       preco: "R$ 329,90", parcelas: "3x R$ 109,96", emoji: "🟣", cor: "#002395", bg: "#ede7f6" },
+  { id: 2, nome: "Brasil 2024 – Away", preco: "R$ 349,90", parcelas: "3x R$ 116,63", cor: "#002776", bg: "#e8eaf6" },
+  { id: 3, nome: "Argentina 2024",     preco: "R$ 329,90", parcelas: "3x R$ 109,96", cor: "#74ACDF", bg: "#e3f2fd" },
+  { id: 4, nome: "França 2024",        preco: "R$ 329,90", parcelas: "3x R$ 109,96", cor: "#002395", bg: "#ede7f6" },
 ];
 
 export default function Home() {
-  const [camisa, setCamisa] = useState(camisas[0]);
-  const [foto, setFoto] = useState(null);
-  const [fotoBase64, setFotoBase64] = useState(null);
-  const [resultado, setResultado] = useState(null);
+  const [camisa, setCamisa] = useState<Camisa>(camisas[0]);
+  const [foto, setFoto] = useState<string | null>(null);
+  const [fotoBase64, setFotoBase64] = useState<string | null>(null);
+  const [resultado, setResultado] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState(null);
+  const [erro, setErro] = useState<string | null>(null);
   const [adicionado, setAdicionado] = useState(false);
 
   function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
     setFoto(URL.createObjectURL(file));
     setResultado(null);
     const reader = new FileReader();
-    reader.onload = () => setFotoBase64(reader.result.split(",")[1]);
+    reader.onload = () => {
+      const result = reader.result as string;
+      setFotoBase64(result.split(",")[1]);
+    };
     reader.readAsDataURL(file);
   }
 
@@ -96,12 +109,12 @@ export default function Home() {
           <div style={{ background: "#fff", borderRadius: 12, padding: 28, marginBottom: 24, boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}>
             <div style={{ display: "flex", gap: 24 }}>
               <div style={{ width: 180, height: 180, background: camisa.bg, borderRadius: 10, overflow: "hidden", flexShrink: 0, border: `2px solid ${camisa.cor}33`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-  {camisa.img ? (
-    <img src={camisa.img} alt={camisa.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-  ) : (
-    <span style={{ fontSize: 80 }}>👕</span>
-  )}
-</div>
+                {camisa.img ? (
+                  <img src={camisa.img} alt={camisa.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <span style={{ fontSize: 80 }}>👕</span>
+                )}
+              </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 11, color: "#888", letterSpacing: 2, marginBottom: 6, textTransform: "uppercase" }}>Camisa Oficial</div>
                 <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 8px", color: "#1a1a2e" }}>{camisa.nome}</h1>
@@ -146,7 +159,13 @@ export default function Home() {
                     transition: "all 0.15s",
                   }}
                 >
-                  <div style={{ height: 70, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 8 }}>👕</div>
+                  <div style={{ height: 70, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8, overflow: "hidden", borderRadius: 4 }}>
+                    {c.img ? (
+                      <img src={c.img} alt={c.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <span style={{ fontSize: 36 }}>👕</span>
+                    )}
+                  </div>
                   <p style={{ fontSize: 11, fontWeight: 600, color: "#333", margin: "0 0 2px", lineHeight: 1.3 }}>{c.nome}</p>
                   <p style={{ fontSize: 12, color: c.cor, fontWeight: 700, margin: 0 }}>{c.preco}</p>
                 </div>
@@ -170,7 +189,7 @@ export default function Home() {
               display: "block",
               border: foto ? "2px solid #1a1a2e" : "2px dashed #d0d0d0",
               borderRadius: 10,
-              padding: foto ? 0 : 24,
+              padding: foto ? "0" : "24px",
               textAlign: "center",
               cursor: "pointer",
               marginBottom: 12,
