@@ -17,7 +17,7 @@ export default function Home() {
   const [erro, setErro] = useState(null);
   const [adicionado, setAdicionado] = useState(false);
 
-  function handleFoto(e) {
+  function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files[0];
     if (!file) return;
     setFoto(URL.createObjectURL(file));
